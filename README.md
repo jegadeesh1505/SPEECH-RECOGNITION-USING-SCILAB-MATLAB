@@ -1,4 +1,6 @@
 
+# EXP 5 : SPEECH RECOGNITION USING SCILAB
+
 ## AIM: 
 
 To perform and verify speech recognition using SCILAB. 
@@ -7,80 +9,62 @@ To perform and verify speech recognition using SCILAB.
 PC installed with SCILAB. 
 
 ## PROGRAM : 
-```python
-//  SPEECH RECOGNITION USING SCILAB
-clc;
-clear;
-close;
+```
+# ================================
+# INSTALL REQUIREMENTS
+# ================================
+!pip -q install SpeechRecognition pydub
+!apt-get -qq install ffmpeg
 
-disp("Loading audio files...");
+# ================================
+# IMPORT LIBRARIES
+# ================================
+import speech_recognition as sr
+from google.colab import files
+from pydub import AudioSegment
 
-// Read reference and test voice files
-[y1, fs1] = wavread("C:\Users\acer\Downloads\referrence.wav");
-[y2, fs2] = wavread("C:\Users\acer\Downloads\test.wav");
+# ================================
+# UPLOAD AUDIO FILE
+# ================================
+print("📁 Upload audio file (MP3 or WAV)")
+uploaded = files.upload()
 
-// Check sampling rates
-if fs1 <> fs2 then
-    error("Sampling rates must match!");
-end
+audio_file = list(uploaded.keys())[0]
 
-// Convert stereo to mono (if needed)
-if size(y1,2) == 2 then
-    y1 = mean(y1, 2);
-end
-if size(y2,2) == 2 then
-    y2 = mean(y2, 2);
-end
+# ================================
+# CONVERT TO WAV (IF MP3)
+# ================================
+if audio_file.endswith(".mp3"):
+    print("🔄 Converting MP3 to WAV...")
+    sound = AudioSegment.from_mp3(audio_file)
+    audio_file = "converted.wav"
+    sound.export(audio_file, format="wav")
 
-// Make both signals same length
-n = min(length(y1), length(y2));
-y1 = y1(1:n);
-y2 = y2(1:n);
+# ================================
+# SPEECH TO TEXT
+# ================================
+recognizer = sr.Recognizer()
 
-// Compute Euclidean distance
-dist = sqrt(sum((y1 - y2).^2));
+with sr.AudioFile(audio_file) as source:
+    audio_data = recognizer.record(source)
 
-disp("Euclidean distance (reference vs test): " + string(dist));
+# ================================
+# CONVERT AUDIO TO TEXT
+# ================================
+try:
+    text = recognizer.recognize_google(audio_data)
+    print("\n🎯 Converted Text:\n", text)
 
-// Decision based on threshold
-if dist < 0.5 then
-    disp("Matching with reference (same word)");
-else
-    disp("Not matching with reference (different word)");
-end
+except sr.UnknownValueError:
+    print("\n❌ Could not understand audio")
 
-// Plot both signals
-figure(0);
-subplot(2,1,1);
-plot(y1);
-title("REFERENCE VOICE SIGNAL");
-xlabel("Samples");
-ylabel("Amplitude");
-
-subplot(2,1,2);
-plot(y2);
-title("TEST VOICE SIGNAL");
-xlabel("Samples");
-ylabel("Amplitude");
-
-// Comparison plot
-figure(1);
-plot(y1, 'b');
-plot(y2, 'r');
-title("Original (Blue) vs Test (Red) Signal");
-xlabel("Samples");
-ylabel("Amplitude");
-legend(["Reference", "Test"]);
-
-disp("Waveforms plotted successfully. Close the graph window manually to finish.");
-
+except sr.RequestError:
+    print("\n❌ API error (Check internet)")
 ```
 
 ## OUTPUT: 
-<img width="405" height="577" alt="image" src="https://github.com/user-attachments/assets/8acffbfe-f052-4029-a209-6fe57e8f29b4" />
-<img width="760" height="600" alt="image" src="https://github.com/user-attachments/assets/f43f8351-e268-4bf4-803c-255111bf5cff" />
-<img width="762" height="600" alt="image" src="https://github.com/user-attachments/assets/a1981565-0b3f-4f53-a8d3-0271e15f25c1" />
 
+<img width="1599" height="690" alt="image" src="https://github.com/user-attachments/assets/ceaf3ba1-5301-44cc-ad0c-0ae2279fae8a" />
 
 ## RESULT: 
 Thus the speech recognition using SCILAB was performed and verified.
