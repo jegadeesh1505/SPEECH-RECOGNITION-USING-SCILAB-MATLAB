@@ -9,7 +9,7 @@ To perform and verify speech recognition using SCILAB.
 PC installed with SCILAB. 
 
 ## PROGRAM : 
-```
+```py
 # ================================
 # INSTALL REQUIREMENTS
 # ================================
